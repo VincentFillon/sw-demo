@@ -1,7 +1,7 @@
 self.addEventListener('install', function(event) {
   event.waitUntil(
     caches.open('sw-demo-v1').then(function(cache) {
-      return cache.addAll(['/', '/favicon.ico', '/index.html', '/main.bundle.js', '/assets/default_dog.jpg']);
+      return cache.addAll(['./', './favicon.ico', './index.html', './main.bundle.js', './assets/default_dog.jpg']);
     })
   );
 });
