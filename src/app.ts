@@ -2,8 +2,6 @@ import { Renderer } from './utils';
 import { ImageI, HtmlElementI } from './models';
 import { images } from './data/images';
 
-require('./favicon.ico');
-require('./assets/default_dog.jpg');
 require('./styles/app.scss');
 
 // register service worker
