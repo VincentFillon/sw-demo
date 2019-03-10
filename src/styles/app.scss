@@ -1,0 +1,35 @@
+@import 'node_modules/bootstrap/scss/bootstrap';
+
+body {
+  color: #cecece;
+  background-color: #333;
+
+  #status-indicator {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: auto;
+    padding: 0.5em;
+    line-height: 2em;
+    font: bold 1em sans-serif;
+    color: #fff;
+  }
+
+  .online {
+    background: green;
+  }
+
+  .offline {
+    background: red;
+  }
+
+  figure {
+    width: 400px;
+    min-height: 300px;
+
+    caption {
+      width: 100%;
+      display: block;
+    }
+  }
+}
