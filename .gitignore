@@ -4,7 +4,6 @@ src/**/*.js
 !sw-demo-service-worker.js
 src/**/*.js.map
 typings
-dist
 coverage
 ts-out
 npm-debug.log
