@@ -4,6 +4,12 @@ body {
   color: #cecece;
   background-color: #333;
 
+  #clear-cache-btn {
+    position: fixed;
+    top: 5px;
+    left: 5px;
+  }
+
   #status-indicator {
     position: fixed;
     top: 0;
