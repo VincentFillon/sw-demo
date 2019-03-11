@@ -1,8 +1,9 @@
-@import 'node_modules/bootstrap/scss/bootstrap';
+@import '~bootstrap/scss/bootstrap';
+@import './font-awesome/font-awesome';
 
 body {
-  color: #cecece;
-  background-color: #333;
+  color: $light;
+  background-color: $dark;
 
   #clear-cache-btn {
     position: fixed;
@@ -18,24 +19,39 @@ body {
     padding: 0.5em;
     line-height: 2em;
     font: bold 1em sans-serif;
-    color: #fff;
+    color: $light;
+
+    .online {
+      color: $success;
+    }
+
+    .offline {
+      color: $danger;
+    }
+
+    .fa-signal {
+      &.offline {
+        &:after {
+          position: absolute;
+          content: '\\';
+          color: $danger;
+          font-weight: 700;
+          font-size: 1.7em;
+          right: 10px;
+          top: 3px;
+          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.75);
+        }
+      }
+    }
   }
 
-  .online {
-    background: green;
-  }
+  #sw-demo-carousel {
+    height: 80%;
 
-  .offline {
-    background: red;
-  }
-
-  figure {
-    width: 400px;
-    min-height: 300px;
-
-    caption {
-      width: 100%;
-      display: block;
+    .carousel-caption {
+      h5 {
+        text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.75);
+      }
     }
   }
 }

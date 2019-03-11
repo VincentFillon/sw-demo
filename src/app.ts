@@ -1,6 +1,7 @@
-import { Renderer } from './utils';
-import { ImageI, HtmlElementI } from './models';
+import { ImageI } from './models';
 import { images } from './data/images';
+import 'bootstrap';
+import * as $ from 'jquery';
 
 require('./styles/app.scss');
 
@@ -22,7 +23,7 @@ if ('serviceWorker' in navigator) {
 window.addEventListener('load', () => {
   const clearBtn: HTMLElement = document.getElementById('clear-cache-btn');
 
-  clearBtn.addEventListener('click', e => {
+  clearBtn.addEventListener('click', () => {
     if ('caches' in window) {
       caches.open(RUNTIME).then(cache => {
         cache.keys().then(keys => {
@@ -34,13 +35,13 @@ window.addEventListener('load', () => {
     }
   });
 
-  const status: HTMLElement = document.getElementById('status-indicator');
-
   function updateOnlineStatus() {
     var condition = navigator.onLine ? 'online' : 'offline';
 
-    status.className = condition;
-    status.innerHTML = condition.toUpperCase();
+    $('#status-indicator').empty();
+    $('#status-indicator').append(
+      `<span class="d-none d-md-inline">${condition.toUpperCase()} </span><i class="fa fa-signal ${condition}"></i>`
+    );
   }
 
   updateOnlineStatus();
@@ -48,16 +49,17 @@ window.addEventListener('load', () => {
   window.addEventListener('online', updateOnlineStatus);
   window.addEventListener('offline', updateOnlineStatus);
 
-  const mainRenderer: Renderer = new Renderer('#sw-demo-container');
+  interface Item {
+    index: number;
+    imgData: ImageI;
+    imgUrl: string;
+  }
 
-  const imgGrid: HtmlElementI = {
-    tagName: 'div',
-    classes: 'row align-items-end',
-    children: []
-  };
+  let promises: Promise<void>[] = [];
+  let items: Item[] = [];
 
-  images.forEach((image: ImageI, index: number) => {
-    fetch(image.url, {
+  images.forEach((image: ImageI) => {
+    let promise: Promise<void> = fetch(image.url, {
       headers: {
         Authorization: 'Client-ID 2023f60e723bc951d0a13fcf586156faaa7e1ec9f07228e5156fb5986456ee3e',
         'Cache-Control': 'no-cache'
@@ -69,43 +71,34 @@ window.addEventListener('load', () => {
         }
       })
       .then(blob => {
-        let imageURL: string = window.URL.createObjectURL(blob);
-
-        imgGrid.children[index] = {
-          tagName: 'div',
-          classes: 'col',
-          children: [
-            {
-              tagName: 'figure',
-              classes: 'text-center',
-              children: [
-                {
-                  tagName: 'img',
-                  attributes: [
-                    { name: 'src', value: imageURL },
-                    { name: 'alt', value: image.alt },
-                    { name: 'style', value: 'max-width: 300px; max-height: 300px' }
-                  ]
-                },
-                {
-                  tagName: 'caption',
-                  classes: 'text-center',
-                  children: [
-                    { tagName: 'span', children: [{ tagName: 'strong', innerHtml: image.name }] },
-                    { tagName: 'br' },
-                    {
-                      tagName: 'a',
-                      attributes: [{ name: 'href', value: image.creditsUrl }, { name: 'target', value: '_blank' }],
-                      innerHtml: image.credits
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        };
-        mainRenderer.clearContent();
-        mainRenderer.appendChild(mainRenderer.renderEl(imgGrid));
+        let index: number = items.length;
+        items.push({
+          index: index,
+          imgData: image,
+          imgUrl: window.URL.createObjectURL(blob)
+        });
       });
+    promises.push(promise);
+  });
+
+  let sliders: string = '';
+  let indicators: string = '';
+
+  Promise.all(promises).then(() => {
+    items.forEach(item => {
+      sliders += `<div class="carousel-item${item.index === 0 ? ' active' : ''}">
+                    <img class="d-block h-100 m-auto" src="${item.imgUrl}" alt="${item.imgData.alt}">
+                    <div class="carousel-caption d-none d-md-block">
+                      <h5>${item.imgData.name}</h5>
+                      <p><a href="${item.imgData.creditsUrl}" target="_blank">${item.imgData.credits}</a></p>
+                    </div>
+                  </div>`;
+      indicators += `<li data-target="#sw-demo-carousel" data-slide-to="${item.index}" ${
+        item.index === 0 ? 'class="active"' : ''
+      }></li>`;
+    });
+    $('#indicators').append(indicators);
+    $('#sliders').append(sliders);
+    (<any>$('#sw-demo-carousel')).carousel();
   });
 });

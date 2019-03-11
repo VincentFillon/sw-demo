@@ -1,7 +1,6 @@
 const path = require('path');
-const webpack = require('webpack');
+const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
-const autoprefixer = require('autoprefixer');
 
 const ROOT = path.resolve(__dirname, 'src');
 const DESTINATION = path.resolve(__dirname, 'dist');
@@ -9,7 +8,7 @@ const DESTINATION = path.resolve(__dirname, 'dist');
 module.exports = {
   context: ROOT,
 
-  entry: './app.ts',
+  entry: ['./app.ts', 'font-awesome/scss/font-awesome.scss'],
 
   output: {
     filename: '[name].bundle.js',
@@ -56,30 +55,38 @@ module.exports = {
         ]
       },
       {
-        test: /\.scss$/,
+        test: /\.(scss)$/,
         use: [
-          'style-loader', // creates style nodes from JS strings
-          'css-loader', // translates CSS into CommonJS
-          'sass-loader', // compiles Sass to CSS, using Node Sass by default
-          'postcss-loader'
+          {
+            loader: 'style-loader' // inject CSS to page
+          },
+          {
+            loader: 'css-loader' // translates CSS into CommonJS modules
+          },
+          {
+            loader: 'postcss-loader', // Run post css actions
+            options: {
+              plugins: function() {
+                // post css plugins, can be exported to postcss.config.js
+                return [require('precss'), require('autoprefixer')];
+              }
+            }
+          },
+          {
+            loader: 'sass-loader' // compiles Sass to CSS
+          }
         ]
       },
+      // font-awesome
       {
-        test: /\.(jpe?g|gif|png)$/i,
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
         use: [
           {
             loader: 'file-loader',
             options: {
-              publicPath: 'assets'
+              name: '[name].[ext]',
+              outputPath: 'fonts/'
             }
-          }
-        ]
-      },
-      {
-        test: /\.ico$/i,
-        use: [
-          {
-            loader: 'file-loader'
           }
         ]
       }
@@ -90,11 +97,7 @@ module.exports = {
       template: './index.html',
       filename: './index.html'
     }),
-    new webpack.LoaderOptionsPlugin({
-      options: {
-        postcss: [autoprefixer()]
-      }
-    })
+    new CopyPlugin(['favicon.ico', 'sw-demo-service-worker.js', 'assets/**/*'])
   ],
 
   devtool: 'cheap-module-source-map',
