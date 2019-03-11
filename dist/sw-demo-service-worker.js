@@ -2,12 +2,12 @@ const PRECACHE = 'sw-demo-precache-v1';
 const RUNTIME = 'sw-demo-v1';
 
 const PRECACHE_URLS = [
-  '/',
-  '/favicon.ico',
-  '/index.html',
-  '/main.bundle.js',
-  '/fonts/fontawesome-webfont.woff2',
-  '/assets/image_not_available.jpg'
+  './',
+  './favicon.ico',
+  './index.html',
+  './main.bundle.js',
+  './fonts/fontawesome-webfont.woff2',
+  './assets/image_not_available.jpg'
 ];
 
 const IMGS_ORIGIN_REGEX = new RegExp(/\/\/images\.unsplash\.com\//);
