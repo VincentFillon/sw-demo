@@ -7,11 +7,26 @@
   </head>
 
   <body>
-    <h1 class="text-center">Service Worker Demo</h1>
-    <button id="clear-cache-btn" type="button" class="btn btn-danger btn-sm">
-      <i class="fa fa-trash-o"></i> <span class="d-none d-md-inline">Clear cache</span>
-    </button>
-    <div id="status-indicator"></div>
+    <nav class="navbar navbar-dark">
+      <a class="navbar-brand" href="#">
+        <span id="status-indicator"></span>
+        Service Worker Demo
+      </a>
+      <div id="offline-rdy-indicator" class="ml-auto" data-placement="left" title="Offline mode unavailable">
+        <i class="fa fa-times text-danger"></i>
+      </div>
+      <div class="btn-group">
+        <button type="button" class="btn text-light" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fa fa-ellipsis-h"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right">
+          <button class="dropdown-item" type="button">Action</button>
+          <div class="dropdown-divider"></div>
+          <button id="clear-cache-btn" class="dropdown-item text-danger" type="button"><i class="fa fa-trash-o"></i> Clear cached images</button>
+        </div>
+      </div>
+    </nav>
+
     <section id="sw-demo-container" class="container-fluid">
       <div class="carousel-container">
         <div id="sw-demo-carousel" class="carousel slide" data-ride="carousel">

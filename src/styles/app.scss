@@ -1,56 +1,65 @@
 @import '~bootstrap/scss/bootstrap';
 @import './font-awesome/font-awesome';
 
-body {
-  color: $light;
-  background-color: $dark;
+html {
+  width: 100%;
+  height: 100%;
 
-  #clear-cache-btn {
-    position: fixed;
-    top: 5px;
-    left: 5px;
-  }
-
-  #status-indicator {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: auto;
-    padding: 0.5em;
-    line-height: 2em;
-    font: bold 1em sans-serif;
+  body {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
     color: $light;
+    background-color: $dark;
 
-    .online {
-      color: $success;
-    }
-
-    .offline {
-      color: $danger;
-    }
-
-    .fa-signal {
-      &.offline {
-        &:after {
-          position: absolute;
-          content: '\\';
+    #status-indicator {
+      .fa-signal {
+        &.online {
+          color: $success;
+        }
+        &.offline {
           color: $danger;
-          font-weight: 700;
-          font-size: 1.7em;
-          right: 10px;
-          top: 3px;
-          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.75);
+          &:after {
+            position: absolute;
+            content: '\\';
+            color: $danger;
+            font-weight: 700;
+            font-size: 1.7em;
+            left: 23px;
+            top: 12px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.75);
+          }
         }
       }
     }
-  }
 
-  #sw-demo-carousel {
-    height: 80%;
+    section {
+      width: 100%;
+      height: calc(100% - 66px);
 
-    .carousel-caption {
-      h5 {
-        text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.75);
+      #sw-demo-carousel {
+        height: 100%;
+
+        .carousel-item {
+          img {
+            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.65);
+
+            &.cached {
+              border: 2px solid rgba($success, 0.65);
+            }
+          }
+          .btn-toggle-cache {
+            width: 100px;
+            position: absolute;
+            top: 5px;
+            left: calc(50% - 50px);
+          }
+          .carousel-caption {
+            h5 {
+              text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.75);
+            }
+          }
+        }
       }
     }
   }
