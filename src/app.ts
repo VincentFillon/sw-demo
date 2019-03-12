@@ -7,7 +7,11 @@ import * as $ from 'jquery';
 require('./styles/app.scss');
 
 const RUNTIME: string = 'sw-demo-v1';
-const CACHE_IMG_LIST: string[] = [];
+const CACHE_IMG_LIST: string[] = [
+  // workaround for the user selection of images not working :
+  'https://images.unsplash.com/photo-1551742365-038395f2ca06?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1900&fit=max&ixid=eyJhcHBfaWQiOjYwNTU2fQ',
+  'https://images.unsplash.com/photo-1534628854350-62b395c4a2c0?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1900&fit=max&ixid=eyJhcHBfaWQiOjYwNTU2fQ'
+];
 
 // register service worker
 if ('serviceWorker' in navigator) {
@@ -34,16 +38,59 @@ if ('serviceWorker' in navigator) {
     });
 }
 
+function toggleCache(id: number): void {
+  let image: IImage = images.filter(i => i.id === id)[0];
+  let imgIndex: number = CACHE_IMG_LIST.indexOf(image.data.url);
+  if (imgIndex === -1) {
+    CACHE_IMG_LIST.push(image.data.url);
+    $(`#image-${image.id}`).toggleClass('cached', true);
+  } else {
+    CACHE_IMG_LIST.splice(imgIndex, 1);
+    $(`#image-${image.id}`).toggleClass('cached', false);
+  }
+}
+
 $(window).ready(() => {
+  $('#save-cache-btn').on('click', () => {
+    if ('caches' in window) {
+      caches.open(RUNTIME).then((cache: Cache) => {
+        cache.addAll(CACHE_IMG_LIST);
+        /* CACHE_IMG_LIST.forEach((url: string) => {
+          fetch(url, {
+            headers: {
+              Authorization: 'Client-ID 2023f60e723bc951d0a13fcf586156faaa7e1ec9f07228e5156fb5986456ee3e',
+              'Cache-Control': 'no-cache'
+            }
+          })
+            .then(response => {
+              if (response && response.status === 200) {
+                cache.put(url, response);
+              }
+            })
+            .catch(error => {
+              console.error('Fetching image respond with :', error);
+            });
+        }); */
+      });
+    }
+  });
+
   $('#clear-cache-btn').on('click', () => {
     if ('caches' in window) {
-      caches.open(RUNTIME).then(cache => {
-        cache.keys().then(keys => {
-          keys.forEach(key => {
+      caches.open(RUNTIME).then((cache: Cache) => {
+        cache.keys().then((keys: ReadonlyArray<Request>) => {
+          keys.forEach((key: Request) => {
             cache.delete(key);
           });
         });
       });
+    }
+  });
+
+  $('.btn-toggle-cache').on('click', () => {
+    let imgId: number = $(this).data('image-id');
+    if (imgId !== undefined) {
+      toggleCache(imgId);
     }
   });
 
@@ -108,23 +155,4 @@ $(window).ready(() => {
     $('#indicators').append(indicators.join(''));
     (<any>$('#sw-demo-carousel')).carousel();
   });
-});
-
-function toggleCache(id: number): void {
-  let image: IImage = images.filter(i => i.id === id)[0];
-  let imgIndex: number = CACHE_IMG_LIST.indexOf(image.data.url);
-  if (imgIndex === -1) {
-    CACHE_IMG_LIST.push(image.data.url);
-    $(`#image-${image.id}`).toggleClass('cached', true);
-  } else {
-    CACHE_IMG_LIST.splice(imgIndex, 1);
-    $(`#image-${image.id}`).toggleClass('cached', false);
-  }
-}
-
-$(document).on('click', '.btn-toggle-cache', () => {
-  let imgId: number = $(this).data('image-id');
-  if (imgId !== undefined) {
-    toggleCache(imgId);
-  }
 });

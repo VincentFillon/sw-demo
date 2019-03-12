@@ -12,24 +12,6 @@ const PRECACHE_URLS: string[] = [
 
 const IMGS_ORIGIN_REGEX: RegExp = new RegExp(/\/\/images\.unsplash\.com\//);
 
-const CACHED_IMGS: string[] = [
-  'photo-1551742365-038395f2ca06',
-  'photo-1529088363398-8efc64a0eb95',
-  'photo-1534628854350-62b395c4a2c0',
-  'photo-1517423568366-8b83523034fd'
-];
-
-let imgs_reg_def: string = '(';
-CACHED_IMGS.forEach((img: string, index: number) => {
-  if (index > 0) {
-    imgs_reg_def += '|';
-  }
-  imgs_reg_def += '(' + img + ')';
-});
-imgs_reg_def += ')';
-
-const CACHED_IMGS_REGEX: RegExp = new RegExp(imgs_reg_def);
-
 self.addEventListener('install', (event: ExtendableEvent) => {
   event.waitUntil(
     caches.open(PRECACHE).then((cache: Cache) => {
@@ -69,13 +51,7 @@ self.addEventListener('fetch', (event: FetchEvent) => {
         .then((response: Response) => {
           let responseClone = response.clone();
 
-          if (IMGS_ORIGIN_REGEX.test(event.request.url)) {
-            if (CACHED_IMGS_REGEX.test(event.request.url)) {
-              caches.open(RUNTIME).then((cache: Cache) => {
-                cache.put(event.request, responseClone);
-              });
-            }
-          } else if (event.request.url.startsWith(self.location.origin)) {
+          if (IMGS_ORIGIN_REGEX.test(event.request.url) || event.request.url.startsWith(self.location.origin)) {
             caches.open(RUNTIME).then((cache: Cache) => {
               cache.put(event.request, responseClone);
             });
@@ -83,7 +59,7 @@ self.addEventListener('fetch', (event: FetchEvent) => {
           return response;
         })
         .catch((error: any) => {
-          if (IMGS_ORIGIN_REGEX.test(event.request.url) && !CACHED_IMGS_REGEX.test(event.request.url)) {
+          if (IMGS_ORIGIN_REGEX.test(event.request.url)) {
             return caches.match('/assets/image_not_available.jpg');
           } else {
             return Promise.reject(error);
