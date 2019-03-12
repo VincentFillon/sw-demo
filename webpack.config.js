@@ -8,10 +8,13 @@ const DESTINATION = path.resolve(__dirname, 'dist');
 module.exports = {
   context: ROOT,
 
-  entry: ['./app.ts', 'font-awesome/scss/font-awesome.scss'],
+  entry: {
+    'main.bundle': ['./app.ts', 'font-awesome/scss/font-awesome.scss'],
+    'service-worker': './service-worker.ts'
+  },
 
   output: {
-    filename: '[name].bundle.js',
+    filename: '[name].js',
     path: DESTINATION
   },
 
@@ -97,7 +100,7 @@ module.exports = {
       template: './index.html',
       filename: './index.html'
     }),
-    new CopyPlugin(['favicon.ico', 'sw-demo-service-worker.js', 'assets/**/*'])
+    new CopyPlugin(['favicon.ico', 'assets/**/*'])
   ],
 
   devtool: 'cheap-module-source-map',

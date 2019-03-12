@@ -1,5 +1,6 @@
-import { ImageI } from './models';
+import { ImageItemI } from './models';
 import { images } from './data/images';
+
 import 'bootstrap';
 import * as $ from 'jquery';
 
@@ -10,7 +11,7 @@ const RUNTIME = 'sw-demo-v1';
 // register service worker
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker
-    .register('sw-demo-service-worker.js')
+    .register('service-worker.js')
     .then(registration => {
       console.log('ServiceWorker - registration successful with scope: ', registration.scope);
     })
@@ -20,10 +21,10 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-window.addEventListener('load', () => {
-  const clearBtn: HTMLElement = document.getElementById('clear-cache-btn');
+let promises: Promise<void>[] = [];
 
-  clearBtn.addEventListener('click', () => {
+$(window).ready(() => {
+  $('#clear-cache-btn').on('click', () => {
     if ('caches' in window) {
       caches.open(RUNTIME).then(cache => {
         cache.keys().then(keys => {
@@ -35,7 +36,7 @@ window.addEventListener('load', () => {
     }
   });
 
-  function updateOnlineStatus() {
+  function updateOnlineStatus(): void {
     var condition = navigator.onLine ? 'online' : 'offline';
 
     $('#status-indicator').empty();
@@ -46,20 +47,22 @@ window.addEventListener('load', () => {
 
   updateOnlineStatus();
 
-  window.addEventListener('online', updateOnlineStatus);
-  window.addEventListener('offline', updateOnlineStatus);
+  $(window).on('online', updateOnlineStatus);
+  $(window).on('offline', updateOnlineStatus);
 
-  interface Item {
-    index: number;
-    imgData: ImageI;
-    imgUrl: string;
+
+  function toggleCache(index: number): void {
+    let img: ImageItemI = images.filter(image => image.index === index)[0];
+    // TODO: add/remove image to the cached
+    
+    // TODO: add/remove class to see if image is cached or not
   }
 
-  let promises: Promise<void>[] = [];
-  let items: Item[] = [];
+  let sliders: string[] = [];
+  let indicators: string[] = [];
 
-  images.forEach((image: ImageI) => {
-    let promise: Promise<void> = fetch(image.url, {
+  images.forEach((image: ImageItemI) => {
+    let promise: Promise<void> = fetch(image.data.url, {
       headers: {
         Authorization: 'Client-ID 2023f60e723bc951d0a13fcf586156faaa7e1ec9f07228e5156fb5986456ee3e',
         'Cache-Control': 'no-cache'
@@ -71,34 +74,34 @@ window.addEventListener('load', () => {
         }
       })
       .then(blob => {
-        let index: number = items.length;
-        items.push({
-          index: index,
-          imgData: image,
-          imgUrl: window.URL.createObjectURL(blob)
+        image.src = window.URL.createObjectURL(blob);
+
+        sliders[image.index] = `
+          <div class="carousel-item${image.index === 0 ? ' active' : ''}">
+            <img id="image-${image.index}" class="d-block h-100 m-auto" src="${image.src}" alt="${
+          image.data.alt
+        }" data-image-url="${image.data.url}">
+            <div class="carousel-caption d-none d-md-block">
+              <h5>${image.data.name}</h5>
+              <p><a href="${image.data.creditsUrl}" target="_blank">${image.data.credits}</a></p>
+            </div>
+          </div>`;
+
+        indicators[image.index] = `
+        <li data-target="#sw-demo-carousel" data-slide-to="${image.index}" ${
+          image.index === 0 ? 'class="active"' : ''
+        }></li>`;
+
+        $(document).on('click', `#image-${image.index}`, () => {
+          toggleCache(image.index);
         });
       });
     promises.push(promise);
   });
 
-  let sliders: string = '';
-  let indicators: string = '';
-
   Promise.all(promises).then(() => {
-    items.forEach(item => {
-      sliders += `<div class="carousel-item${item.index === 0 ? ' active' : ''}">
-                    <img class="d-block h-100 m-auto" src="${item.imgUrl}" alt="${item.imgData.alt}">
-                    <div class="carousel-caption d-none d-md-block">
-                      <h5>${item.imgData.name}</h5>
-                      <p><a href="${item.imgData.creditsUrl}" target="_blank">${item.imgData.credits}</a></p>
-                    </div>
-                  </div>`;
-      indicators += `<li data-target="#sw-demo-carousel" data-slide-to="${item.index}" ${
-        item.index === 0 ? 'class="active"' : ''
-      }></li>`;
-    });
-    $('#indicators').append(indicators);
-    $('#sliders').append(sliders);
+    $('#sliders').append(sliders.join(''));
+    $('#indicators').append(indicators.join(''));
     (<any>$('#sw-demo-carousel')).carousel();
   });
 });

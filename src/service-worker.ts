@@ -20,7 +20,7 @@ const CACHED_IMGS = [
 ];
 
 let imgs_reg_def = '(';
-CACHED_IMGS.forEach((img, index) => {
+CACHED_IMGS.forEach((img: string, index: number) => {
   if (index > 0) {
     imgs_reg_def += '|';
   }
@@ -29,59 +29,59 @@ CACHED_IMGS.forEach((img, index) => {
 imgs_reg_def += ')';
 const CACHED_IMGS_REGEX = new RegExp(imgs_reg_def);
 
-self.addEventListener('install', event => {
+self.addEventListener('install', (event: ExtendableEvent) => {
   event.waitUntil(
-    caches.open(PRECACHE).then(cache => {
+    caches.open(PRECACHE).then((cache: Cache) => {
       return cache.addAll(PRECACHE_URLS);
     })
   );
 });
 
-self.addEventListener('activate', event => {
+self.addEventListener('activate', (event: ExtendableEvent) => {
   const currentCaches = [PRECACHE, RUNTIME];
   event.waitUntil(
     caches
       .keys()
-      .then(cacheNames => {
-        return cacheNames.filter(cacheName => !currentCaches.includes(cacheName));
+      .then((cacheNames: string[]) => {
+        return cacheNames.filter((cacheName: string) => !currentCaches.includes(cacheName));
       })
-      .then(cachesToDelete => {
+      .then((cachesToDelete: string[]) => {
         return Promise.all(
-          cachesToDelete.map(cacheToDelete => {
+          cachesToDelete.map((cacheToDelete: string) => {
             return caches.delete(cacheToDelete);
           })
         );
       })
-      .then(() => self.clients.claim())
+      .then(() => (<any>self).clients.claim())
   );
 });
 
-self.addEventListener('fetch', event => {
+self.addEventListener('fetch', (event: FetchEvent) => {
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
+    caches.match(event.request).then((cachedResponse: Response) => {
       if (cachedResponse) {
         console.log('Service worker - retrieve cached version of :', event.request.url);
         return cachedResponse;
       }
 
       return fetch(event.request)
-        .then(response => {
+        .then((response: Response) => {
           let responseClone = response.clone();
 
           if (IMGS_ORIGIN_REGEX.test(event.request.url)) {
             if (CACHED_IMGS_REGEX.test(event.request.url)) {
-              caches.open(RUNTIME).then(cache => {
+              caches.open(RUNTIME).then((cache: Cache) => {
                 cache.put(event.request, responseClone);
               });
             }
           } else if (event.request.url.startsWith(self.location.origin)) {
-            caches.open(RUNTIME).then(cache => {
+            caches.open(RUNTIME).then((cache: Cache) => {
               cache.put(event.request, responseClone);
             });
           }
           return response;
         })
-        .catch(error => {
+        .catch((error: any) => {
           if (IMGS_ORIGIN_REGEX.test(event.request.url) && !CACHED_IMGS_REGEX.test(event.request.url)) {
             return caches.match('/assets/image_not_available.jpg');
           } else {
