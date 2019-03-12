@@ -1,7 +1,14 @@
 const PRECACHE = 'sw-demo-precache-v1';
 const RUNTIME = 'sw-demo-v1';
 
-const PRECACHE_URLS = ['/', '/favicon.ico', '/index.html', '/main.bundle.js', '/assets/no_image_available.jpg'];
+const PRECACHE_URLS = [
+  './',
+  './favicon.ico',
+  './index.html',
+  './main.bundle.js',
+  './fonts/fontawesome-webfont.woff2',
+  './assets/image_not_available.jpg'
+];
 
 const IMGS_ORIGIN_REGEX = new RegExp(/\/\/images\.unsplash\.com\//);
 
@@ -76,7 +83,7 @@ self.addEventListener('fetch', event => {
         })
         .catch(error => {
           if (IMGS_ORIGIN_REGEX.test(event.request.url) && !CACHED_IMGS_REGEX.test(event.request.url)) {
-            return caches.match('/assets/no_image_available.jpg');
+            return caches.match('/assets/image_not_available.jpg');
           } else {
             return Promise.reject(error);
           }
