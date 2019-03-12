@@ -1,4 +1,4 @@
-import { ImageItemI } from './models';
+import { IImage } from './models';
 import { images } from './data/images';
 
 import 'bootstrap';
@@ -6,7 +6,8 @@ import * as $ from 'jquery';
 
 require('./styles/app.scss');
 
-const RUNTIME = 'sw-demo-v1';
+const RUNTIME: string = 'sw-demo-v1';
+const CACHE_IMG_LIST: string[] = [];
 
 // register service worker
 if ('serviceWorker' in navigator) {
@@ -50,18 +51,21 @@ $(window).ready(() => {
   $(window).on('online', updateOnlineStatus);
   $(window).on('offline', updateOnlineStatus);
 
-
-  function toggleCache(index: number): void {
-    let img: ImageItemI = images.filter(image => image.index === index)[0];
-    // TODO: add/remove image to the cached
-    
-    // TODO: add/remove class to see if image is cached or not
+  function toggleCache(id: number): void {
+    let image: IImage = images.filter(i => i.id === id)[0];
+    let imgIndex: number = CACHE_IMG_LIST.indexOf(image.data.url);
+    if (imgIndex === -1) {
+      CACHE_IMG_LIST.push(image.data.url);
+    } else {
+      CACHE_IMG_LIST.splice(imgIndex, 1);
+    }
+    $(`#image-${image.id}`).toggleClass('to-be-cached');
   }
 
   let sliders: string[] = [];
   let indicators: string[] = [];
 
-  images.forEach((image: ImageItemI) => {
+  images.forEach((image: IImage) => {
     let promise: Promise<void> = fetch(image.data.url, {
       headers: {
         Authorization: 'Client-ID 2023f60e723bc951d0a13fcf586156faaa7e1ec9f07228e5156fb5986456ee3e',
@@ -76,9 +80,18 @@ $(window).ready(() => {
       .then(blob => {
         image.src = window.URL.createObjectURL(blob);
 
-        sliders[image.index] = `
-          <div class="carousel-item${image.index === 0 ? ' active' : ''}">
-            <img id="image-${image.index}" class="d-block h-100 m-auto" src="${image.src}" alt="${
+        // Set cached img list
+        if ('caches' in window) {
+          caches.match(image.data.url).then((response: Response) => {
+            if (response) {
+              toggleCache(image.id);
+            }
+          });
+        }
+
+        sliders[image.id] = `
+          <div class="carousel-item${image.id === 0 ? ' active' : ''}">
+            <img id="image-${image.id}" class="d-block h-100 m-auto" src="${image.src}" alt="${
           image.data.alt
         }" data-image-url="${image.data.url}">
             <div class="carousel-caption d-none d-md-block">
@@ -87,13 +100,13 @@ $(window).ready(() => {
             </div>
           </div>`;
 
-        indicators[image.index] = `
-        <li data-target="#sw-demo-carousel" data-slide-to="${image.index}" ${
-          image.index === 0 ? 'class="active"' : ''
+        indicators[image.id] = `
+        <li data-target="#sw-demo-carousel" data-slide-to="${image.id}" ${
+          image.id === 0 ? 'class="active"' : ''
         }></li>`;
 
-        $(document).on('click', `#image-${image.index}`, () => {
-          toggleCache(image.index);
+        $(document).on('click', `#image-${image.id}`, () => {
+          toggleCache(image.id);
         });
       });
     promises.push(promise);

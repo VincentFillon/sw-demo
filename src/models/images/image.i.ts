@@ -1,7 +1,7 @@
-export interface ImageI {
-  name: string;
-  url: string;
-  alt: string;
-  credits: string;
-  creditsUrl: string;
+import { IImageData } from './image-data.i';
+
+export interface IImage {
+  id: number;
+  data: IImageData;
+  src?: string;
 }

@@ -1,7 +1,7 @@
-const PRECACHE = 'sw-demo-precache-v1';
-const RUNTIME = 'sw-demo-v1';
+const PRECACHE: string = 'sw-demo-precache-v1';
+const RUNTIME: string = 'sw-demo-v1';
 
-const PRECACHE_URLS = [
+const PRECACHE_URLS: string[] = [
   './',
   './favicon.ico',
   './index.html',
@@ -10,16 +10,16 @@ const PRECACHE_URLS = [
   './assets/image_not_available.jpg'
 ];
 
-const IMGS_ORIGIN_REGEX = new RegExp(/\/\/images\.unsplash\.com\//);
+const IMGS_ORIGIN_REGEX: RegExp = new RegExp(/\/\/images\.unsplash\.com\//);
 
-const CACHED_IMGS = [
+const CACHED_IMGS: string[] = [
   'photo-1551742365-038395f2ca06',
   'photo-1529088363398-8efc64a0eb95',
   'photo-1534628854350-62b395c4a2c0',
   'photo-1517423568366-8b83523034fd'
 ];
 
-let imgs_reg_def = '(';
+let imgs_reg_def: string = '(';
 CACHED_IMGS.forEach((img: string, index: number) => {
   if (index > 0) {
     imgs_reg_def += '|';
@@ -27,7 +27,8 @@ CACHED_IMGS.forEach((img: string, index: number) => {
   imgs_reg_def += '(' + img + ')';
 });
 imgs_reg_def += ')';
-const CACHED_IMGS_REGEX = new RegExp(imgs_reg_def);
+
+const CACHED_IMGS_REGEX: RegExp = new RegExp(imgs_reg_def);
 
 self.addEventListener('install', (event: ExtendableEvent) => {
   event.waitUntil(

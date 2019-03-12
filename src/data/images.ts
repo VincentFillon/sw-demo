@@ -1,8 +1,8 @@
-import { ImageItemI } from '../models';
+import { IImage } from '../models';
 
-export const images: ImageItemI[] = [
+export const images: IImage[] = [
   {
-    index: 0,
+    id: 0,
     data: {
       name: 'Gangsta',
       url:
@@ -13,7 +13,7 @@ export const images: ImageItemI[] = [
     }
   },
   {
-    index: 1,
+    id: 1,
     data: {
       name: 'French',
       url:
@@ -24,7 +24,7 @@ export const images: ImageItemI[] = [
     }
   },
   {
-    index: 2,
+    id: 2,
     data: {
       name: 'Craftworker',
       url:
@@ -35,7 +35,7 @@ export const images: ImageItemI[] = [
     }
   },
   {
-    index: 3,
+    id: 3,
     data: {
       name: 'Explorer',
       url:
@@ -46,7 +46,7 @@ export const images: ImageItemI[] = [
     }
   },
   {
-    index: 4,
+    id: 4,
     data: {
       name: 'Bodyguard',
       url:
@@ -57,7 +57,7 @@ export const images: ImageItemI[] = [
     }
   },
   {
-    index: 5,
+    id: 5,
     data: {
       name: 'Chilly',
       url:
@@ -68,7 +68,7 @@ export const images: ImageItemI[] = [
     }
   },
   {
-    index: 6,
+    id: 6,
     data: {
       name: 'Santa',
       url:
@@ -79,7 +79,7 @@ export const images: ImageItemI[] = [
     }
   },
   {
-    index: 7,
+    id: 7,
     data: {
       name: 'Greedy',
       url:
