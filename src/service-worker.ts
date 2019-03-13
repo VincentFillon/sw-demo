@@ -58,7 +58,7 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 
       return fetch(event.request).catch(() => {
         if (IMGS_ORIGIN_REGEX.test(event.request.url)) {
-          return caches.match('/assets/image_not_available.jpg').then((cachedFallback: Response) => {
+          return caches.match('./assets/image_not_available.jpg').then((cachedFallback: Response) => {
             if (cachedFallback) {
               console.log('Service worker - retrieve fallback image for :', event.request.url);
               return cachedFallback;
