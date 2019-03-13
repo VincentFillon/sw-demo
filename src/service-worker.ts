@@ -3,7 +3,14 @@ const PRECACHE: string = 'sw-demo-precache-v1';
 const RUNTIME: string = 'sw-demo-v1';
 
 // Set precache urls
-const PRECACHE_URLS: string[] = ['/', '/favicon.ico', '/index.html', '/main.bundle.js', '/fonts/fontawesome-webfont.woff2', '/assets/image_not_available.jpg'];
+const PRECACHE_URLS: string[] = [
+  './',
+  './favicon.ico',
+  './index.html',
+  './main.bundle.js',
+  './fonts/fontawesome-webfont.woff2',
+  './assets/image_not_available.jpg'
+];
 
 // Set url for image default fallback
 const IMGS_ORIGIN_REGEX: RegExp = new RegExp(/\/\/images\.unsplash\.com\//);
