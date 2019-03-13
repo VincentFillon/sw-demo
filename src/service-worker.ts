@@ -55,9 +55,8 @@ self.addEventListener('fetch', (event: FetchEvent) => {
             if (cachedFallback) {
               console.log('Service worker - retrieve fallback image for :', event.request.url);
               return cachedFallback;
-            } else {
-              return fetch(event.request);
             }
+            return fetch(event.request);
           });
         } else {
           return fetch(event.request);
