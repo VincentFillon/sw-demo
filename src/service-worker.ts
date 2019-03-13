@@ -3,14 +3,7 @@ const PRECACHE: string = 'sw-demo-precache-v1';
 const RUNTIME: string = 'sw-demo-v1';
 
 // Set precache urls
-const PRECACHE_URLS: string[] = [
-  './',
-  './favicon.ico',
-  './index.html',
-  './main.bundle.js',
-  './fonts/fontawesome-webfont.woff2',
-  './assets/image_not_available.jpg'
-];
+const PRECACHE_URLS: string[] = ['/', '/favicon.ico', '/index.html', '/main.bundle.js', '/fonts/fontawesome-webfont.woff2', '/assets/image_not_available.jpg'];
 
 // Set url for image default fallback
 const IMGS_ORIGIN_REGEX: RegExp = new RegExp(/\/\/images\.unsplash\.com\//);
@@ -58,7 +51,14 @@ self.addEventListener('fetch', (event: FetchEvent) => {
 
       return fetch(event.request).catch(() => {
         if (IMGS_ORIGIN_REGEX.test(event.request.url)) {
-          return caches.match('/assets/image_not_available.jpg');
+          return caches.match('/assets/image_not_available.jpg').then((cachedFallback: Response) => {
+            if (cachedFallback) {
+              console.log('Service worker - retrieve fallback image for :', event.request.url);
+              return cachedFallback;
+            } else {
+              return fetch(event.request);
+            }
+          });
         } else {
           return fetch(event.request);
         }
