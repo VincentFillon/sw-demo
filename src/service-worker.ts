@@ -1,6 +1,8 @@
+// Set cache names
 const PRECACHE: string = 'sw-demo-precache-v1';
 const RUNTIME: string = 'sw-demo-v1';
 
+// Set precache urls
 const PRECACHE_URLS: string[] = [
   './',
   './favicon.ico',
@@ -10,18 +12,23 @@ const PRECACHE_URLS: string[] = [
   './assets/image_not_available.jpg'
 ];
 
+// Set url for image default fallback
 const IMGS_ORIGIN_REGEX: RegExp = new RegExp(/\/\/images\.unsplash\.com\//);
 
+// Service worker install handler
 self.addEventListener('install', (event: ExtendableEvent) => {
   event.waitUntil(
+    // Cache all precache urls
     caches.open(PRECACHE).then((cache: Cache) => {
       return cache.addAll(PRECACHE_URLS);
     })
   );
 });
 
+// Service worker activate handler
 self.addEventListener('activate', (event: ExtendableEvent) => {
   const currentCaches = [PRECACHE, RUNTIME];
+  // Clear old cache urls
   event.waitUntil(
     caches
       .keys()
@@ -39,7 +46,9 @@ self.addEventListener('activate', (event: ExtendableEvent) => {
   );
 });
 
+// Service worker fetch handler
 self.addEventListener('fetch', (event: FetchEvent) => {
+  // Retrieve cached response if match event url or default image fallback if fetching image that is not cached
   event.respondWith(
     caches.match(event.request).then((cachedResponse: Response) => {
       if (cachedResponse) {
@@ -47,24 +56,13 @@ self.addEventListener('fetch', (event: FetchEvent) => {
         return cachedResponse;
       }
 
-      return fetch(event.request)
-        .then((response: Response) => {
-          let responseClone = response.clone();
-
-          if (IMGS_ORIGIN_REGEX.test(event.request.url) || event.request.url.startsWith(self.location.origin)) {
-            caches.open(RUNTIME).then((cache: Cache) => {
-              cache.put(event.request, responseClone);
-            });
-          }
-          return response;
-        })
-        .catch((error: any) => {
-          if (IMGS_ORIGIN_REGEX.test(event.request.url)) {
-            return caches.match('/assets/image_not_available.jpg');
-          } else {
-            return Promise.reject(error);
-          }
-        });
+      return fetch(event.request).catch(() => {
+        if (IMGS_ORIGIN_REGEX.test(event.request.url)) {
+          return caches.match('/assets/image_not_available.jpg');
+        } else {
+          return fetch(event.request);
+        }
+      });
     })
   );
 });

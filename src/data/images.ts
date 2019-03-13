@@ -1,5 +1,6 @@
 import { IImage } from '../models';
 
+// Define images data
 export const images: IImage[] = [
   {
     id: 0,

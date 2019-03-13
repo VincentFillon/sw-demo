@@ -13,8 +13,10 @@
     <nav class="navbar navbar-dark">
       <a class="navbar-brand" href="#">
         <span id="status-indicator"></span>
-        Service Worker Demo
+        <span class="d-none d-md-inline">Service Worker Demo</span>
+        <span class="d-md-none">SWD</span>
       </a>
+      <div id="caching-progress"></div>
       <div id="offline-rdy-indicator" class="ml-auto" data-placement="left" title="Offline mode unavailable">
         <i class="fa fa-times text-danger"></i>
       </div>
@@ -25,15 +27,14 @@
         <div class="dropdown-menu dropdown-menu-right">
           <button id="save-cache-btn" class="dropdown-item" type="button">Save images to cache</button>
           <div class="dropdown-divider"></div>
-          <button id="clear-cache-btn" class="dropdown-item text-danger" type="button"><i class="fa fa-trash-o"></i> Clear cached images</button>
+          <button id="clear-cache-btn" class="dropdown-item text-danger" type="button"><i class="fa fa-trash-o"></i> Clear cache</button>
         </div>
       </div>
     </nav>
 
-    <section id="sw-demo-container" class="container-fluid">
+    <section class="container-fluid">
       <div class="carousel-container">
         <div id="sw-demo-carousel" class="carousel slide" data-ride="carousel">
-          <!-- Indicators -->
           <ol class="carousel-indicators" id="indicators"></ol>
           <div class="carousel-inner" id="sliders"></div>
           <a class="carousel-control-prev" href="#sw-demo-carousel" role="button" data-slide="prev">
